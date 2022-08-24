@@ -1,47 +1,91 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <h1>Vue 3 Todo App</h1>
+  <form @submit.prevent="addNewTodo">
+    <label for="">New Todo</label>
+    <input v-model="data.newTodo" type="text" >
+    <div v-for="todo in data.todos" :key="todo.id" :class="{done: todo.done, 'form-entry': 'form-entry'}">
+      <h4  @click="toggleDone(todo)">{{todo.content}}</h4>
+      <button @click.prevent="deleteTodo(todo)">Delete</button>
+      <!-- <input type="checkbox"> -->
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <!-- <h3>{{newTodo}}</h3> -->
+    <button>Add new todo</button>
+    <button @click.prevent="markAllDone">mark all done</button>
+  </form>
 </template>
 
+<script setup>
+import { toValidAssetId } from '@vue/compiler-core';
+import { ref, reactive } from 'vue';
+ const data = reactive({
+  newTodo: '',
+  todos: []
+ })
+
+ const addNewTodo = () => {
+  console.log(data.newTodo);
+  data.todos.push({
+    id: Date.now(),
+    done: false,
+    content: data.newTodo
+  });
+  data.newTodo = '';
+  console.log(data.todos);
+ }
+
+ const deleteTodo = (individualTodo) => {
+  data.todos = data.todos.filter((todo) => todo.id !== individualTodo.id);
+ }
+
+  const toggleDone = (individualTodo) => {
+    individualTodo.done = !individualTodo.done;
+    console.log(data.todos);
+  }
+
+  const markAllDone = () => {
+    data.todos.forEach((todo) => todo.done = true);
+  }
+
+</script>
+
 <style scoped>
-header {
-  line-height: 1.5;
+
+body {
+  font-family: sans-serif;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  font-size: 2em;
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+input, textarea, button, p, div, section, article, select {
+  display: 'block';
+  width: 80%;
+  font-family: sans-serif;
+  font-size: 1em;
+  margin: 0.5em;
+
+}
+.todo {
+  cursor: pointer;
+}
+.done {
+  text-decoration: line-through;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.form-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.done {
+  text-decoration: line-through;
 }
+
+
+
 </style>
